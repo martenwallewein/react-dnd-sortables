@@ -7,6 +7,7 @@ import {IDraggableInfo} from "../../Types/IDraggableInfo";
 import {IDroppableInfo} from "../../Types/IDroppableInfo";
 import { ReactNode} from "react";
 import DraggableItem from "../Draggable/DraggableItem";
+import WithSortableContext from "../Context/WithSortableContext";
 // import update from "immutability-helper";
 
 export type OnChildDropped = (draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => void;
@@ -46,6 +47,7 @@ export interface DroppableContainerProps {
     className?: string;
     children?: ReactNode;
     draggableItemDimension?: DraggableItemDimension;
+    context?: any;
 }
 
 interface State {
@@ -209,4 +211,4 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
     }*/
 }
 
-export default DroppableContainer;
+export default WithSortableContext(DroppableContainer);

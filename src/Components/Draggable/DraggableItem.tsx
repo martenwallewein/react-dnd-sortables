@@ -9,6 +9,7 @@ import {
 } from "react-dnd";
 
 import ItemTypes from "./ItemTypes";
+import WithSortableContext from "../Context/WithSortableContext";
 
 const cardSource = {
     beginDrag(props: DraggableItemProps) {
@@ -58,6 +59,7 @@ export interface DraggableItemProps {
     isDragging?: boolean;
     moveCard?: (id: string, to: number) => void;
     findCard?: (id: string) => { index: number };
+    context?: any;
 }
 
 @DropTarget(ItemTypes.CARD, cardTarget, connect => ({
@@ -107,4 +109,4 @@ class DraggableItem extends React.Component<DraggableItemProps> {
     }
 }
 
-export default DraggableItem;
+export default WithSortableContext(DraggableItem);

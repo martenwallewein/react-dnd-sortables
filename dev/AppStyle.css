@@ -1,0 +1,4 @@
+.AppContainer {
+    display: flex;
+    flex-flow: row;
+}
