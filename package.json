@@ -1,7 +1,7 @@
 {
     "name": "react-dnd-sortables",
     "version": "0.0.1",
-    "description": "Abstraction of react-dnd for nested sortable items",
+    "description": "Abstraction of react-dnd for nested sortable lists",
     "private": false,
     "author": "Marten Wallewein",
     "main": "build/index.js",

@@ -1,6 +1,11 @@
-import Container from "../src/Components/Sortables/DroppableContainer";
+import DroppableContainer from "../src/Components/Droppable/DroppableContainer";
 import * as React from "react";
-import Card from "../src/Components/Sortables/DraggableItem";
+import DraggableItem from "../src/Components/Draggable/DraggableItem";
+import {DragDropContext} from "react-dnd";
+import HTML5Backend from "react-dnd-html5-backend";
+import {IDraggableInfo} from "../src/Types/IDraggableInfo";
+import {IDroppableInfo} from "../src/Types/IDroppableInfo";
+import Card from "./Components/Card";
 
 const cards = [
     {
@@ -83,6 +88,7 @@ interface State {
     cards: any[];
 }
 
+@DragDropContext(HTML5Backend)
 class App extends React.Component<Props, State> {
 
     constructor(props: Props) {
@@ -96,30 +102,31 @@ class App extends React.Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Container
-                    prefix={"1"}
-                    cards={cards}
-                    cardsToRender={cards.filter(card => card.id < 20)}
-                    onChildDropped={(compCards: Card[]) => {
-                        const otherCards = cards.filter(card => card.type === "2");
-                        compCards = compCards.map((card: any) => {
-                            card.type = "1";
-                            return card;
-                        });
-
-                        const newCards = [...compCards, ...otherCards];
-                        this.setState({
-                            cards: newCards
-                        });
+                <DroppableContainer
+                    id={"1"}
+                    onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {}}
+                    draggableItemDimension={{
+                        height: 50
                     }}
-                />
+                >
+                    {
+                        cards.filter(card =>  card.type === "1").map(card => {
+                            return (
+                                <DraggableItem id={card.id.toString()}>
+                                    <Card title={card.text}/>
+                                </DraggableItem>
+                            );
+                        })
+                    }
+                </DroppableContainer>
                 <br/>
-                <Container
-                    prefix={"2"}
-                    cards={cards}
-                    cardsToRender={cards.filter(card => card.id > 20)}
-                    onChildDropped={(compCards: Card[]) => {
-                        const otherCards = cards.filter(card => card.type === "1");
+                <DroppableContainer
+                    id={"2"}
+                    draggableItemDimension={{
+                        height: 50
+                    }}
+                    onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {
+                        /*const otherCards = cards.filter(card => card.type === "1");
                         compCards = compCards.map((card: any) => {
                             card.type = "2";
                             return card;
@@ -128,9 +135,19 @@ class App extends React.Component<Props, State> {
                         const newCards = [...otherCards, ...compCards, ];
                         this.setState({
                             cards: newCards
-                        });
+                        });*/
                     }}
-                />
+                >
+                    {
+                        cards.filter(card =>  card.type === "2").map(card => {
+                            return (
+                                <DraggableItem id={card.id.toString()}>
+                                    <Card title={card.text}/>
+                                </DraggableItem>
+                            );
+                        })
+                    }
+                </DroppableContainer>
             </React.Fragment>
         );
     }
