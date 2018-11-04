@@ -108,8 +108,8 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
         let draggableChildren = this.state.draggableChildren;
 
         draggableChildren = draggableChildren.map(child => {
-            if (child.placeholder)
-                child.placeholder = false;
+            // if (child.placeholder)
+            //    child.placeholder = false;
 
             if (child.droppableId !== this.props.id)
                 return null;
