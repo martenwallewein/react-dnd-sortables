@@ -5,8 +5,8 @@ import update from "immutability-helper";
 import IDraggableItemIdentifier from "../Draggable/IDraggableItemIdentifier";
 import {IDraggableInfo} from "../../Types/IDraggableInfo";
 import {IDroppableInfo} from "../../Types/IDroppableInfo";
-import { ReactNode} from "react";
-import DraggableItem from "../Draggable/DraggableItem";
+import {ReactNode} from "react";
+// import DraggableItem from "../Draggable/DraggableItem";
 import WithSortableContext from "../Context/WithSortableContext";
 // import update from "immutability-helper";
 
@@ -65,9 +65,13 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
         this.moveCard = this.moveCard.bind(this);
         this.findCard = this.findCard.bind(this);
         this.state = {
-            draggableChildren: DroppableContainer.reactChildrenToItemIdentifiers(props.children),
+            draggableChildren: DroppableContainer.reactChildrenToItemIdentifiers(props.children, props.id),
             isDraggingOver: false
         };
+    }
+
+    componentDidMount() {
+        this.props.context.registerDroppable(this);
     }
 
     stopDragging() {
@@ -81,19 +85,21 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
         if (prevState.isDraggingOver)
             return {};
 
-        console.log("getDerivedStateFromProps");
+        // console.log("getDerivedStateFromProps");
 
         return {
-            draggableChildren: DroppableContainer.reactChildrenToItemIdentifiers(nextProps.children)
+            draggableChildren: DroppableContainer.reactChildrenToItemIdentifiers(nextProps.children, nextProps.id)
         };
     }
 
-    static reactChildrenToItemIdentifiers(children: ReactNode): IDraggableItemIdentifier[] {
+    static reactChildrenToItemIdentifiers(children: ReactNode, droppableId: string): IDraggableItemIdentifier[] {
+
         return React.Children.map(children, (child: any, index: number) => {
 
             return {
                 id: child.props.id,
-                sourceIndex: index
+                sourceIndex: index,
+                droppableId
             };
         });
     }
@@ -105,8 +111,13 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
             if (child.placeholder)
                 child.placeholder = false;
 
+            if (child.droppableId !== this.props.id)
+                return null;
+
             return child;
         });
+
+        draggableChildren = draggableChildren.filter(child => child !== null);
 
         this.setState({
             draggableChildren
@@ -127,16 +138,30 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
                     {
                         draggableChildren.map((draggableChild: IDraggableItemIdentifier, index: number) => {
 
-                            const reactChild: any = childArray.find((child: any) => child.props.id === draggableChild.id);
+                            if (draggableChild === null)
+                                return;
+
+                            let reactChild: any = childArray.find((child: any) => child.props.id === draggableChild.id);
                             if (!reactChild) {
-                                const dimensions: DraggableItemDimension = this.props.draggableItemDimension;
-                                return <DraggableItem id={draggableChild.id} placeholder={true} style={dimensions}/>;
+                                reactChild = this.props.context.draggables.find((child: any) => child.props.id === draggableChild.id);
+                                return React.createElement(reactChild.__proto__.constructor, {
+                                        ...reactChild.props,
+                                        placeholder: draggableChild.placeholder,
+                                        moveCard: this.moveCard,
+                                        findCard: this.findCard
+                                    },
+                                    reactChild.props.children
+                                );
+                                // const dimensions: DraggableItemDimension = this.props.draggableItemDimension;
+                                // return <DraggableItem id={draggableChild.id} placeholder={true} style={dimensions}/>;
                             }
+
                             return React.createElement(reactChild.type, {
                                     ...reactChild.props,
                                     placeholder: draggableChild.placeholder,
                                     moveCard: this.moveCard,
-                                    findCard: this.findCard
+                                    findCard: this.findCard,
+                                    droppableId: this.props.id
                                 },
                                 reactChild.props.children
                             );
@@ -155,11 +180,15 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
         // const exisitingCard = this.state.draggableChildren[atIndex];
         // console.log(exisitingCard);
 
+        this.props.context.setCurrentDroppable(this);
+
         if (!this.state.draggableChildren.find(card2 => card2.id === id)) {
             const cards = this.state.draggableChildren;
+            const card = this.props.context.draggables.find((drag: any) => drag.props.id === id);
             cards.splice(atIndex, 0, {
                 id: id,
-                placeholder: true
+                placeholder: true,
+                droppableId: card.props.droppableId
             });
             console.log("inserted card");
             this.setState({

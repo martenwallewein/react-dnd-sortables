@@ -59,6 +59,7 @@ export interface DraggableItemProps {
     isDragging?: boolean;
     moveCard?: (id: string, to: number) => void;
     findCard?: (id: string) => { index: number };
+    droppableId?: string;
     context?: any;
 }
 
@@ -71,6 +72,11 @@ export interface DraggableItemProps {
 }))
 
 class DraggableItem extends React.Component<DraggableItemProps> {
+
+    componentDidMount() {
+        this.props.context.registerDraggable(this);
+    }
+
     public render() {
         const {
             isDragging,
