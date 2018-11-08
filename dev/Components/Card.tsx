@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface Props {
     title: string;
+    style?: object;
 }
 
 const style = {
@@ -16,7 +17,7 @@ const style = {
 class Card extends React.Component<Props> {
     render() {
         return (
-            <div style={style}>
+            <div style={{...style, ...this.props.style}}>
                 {this.props.title}
             </div>
         );

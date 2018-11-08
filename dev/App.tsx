@@ -5,13 +5,29 @@ import {IDraggableInfo} from "../src/Types/IDraggableInfo";
 import {IDroppableInfo} from "../src/Types/IDroppableInfo";
 import Card from "./Components/Card";
 import {SortableContextProvider} from "../src/Components/Context/SortableContextProvider";
+
 const styles = {
     AppContainer: {
         display: "flex",
         flexFlow: "row"
     },
     Container: {
-        marginLeft: "1em"
+        marginLeft: "1em",
+        display: "flex",
+        flexFlow: "column",
+    },
+    HorizontalContainer: {
+        display: "flex",
+        flexFlow: "row",
+
+    },
+    Card: {
+        margin: "0.25em",
+        backgroundColor: "#9c27b0"
+    },
+    Card2: {
+        margin: "0.25em",
+        backgroundColor: "#2196f3"
     }
 };
 const cards = [
@@ -87,12 +103,31 @@ const cards = [
     }
 ];
 
+const cards2 = [
+    {
+        id: 30,
+        text: "3Spam in Twitter and IRC to promote it",
+        type: "3"
+    },
+    {
+        id: 31,
+        text: "3???",
+        type: "3"
+    },
+    {
+        id: 32,
+        text: "3PROFIT",
+        type: "3"
+    }
+];
+
 interface Props {
 
 }
 
 interface State {
     cards: any[];
+    cards2: any[];
 }
 
 
@@ -102,7 +137,8 @@ class App extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            cards: cards
+            cards: cards,
+            cards2: cards2
         };
     }
 
@@ -113,16 +149,21 @@ class App extends React.Component<Props, State> {
                     <DroppableContainer
                         style={styles.Container}
                         id={"1"}
-                        onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {}}
+                        onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {
+                            this.setState({
+                                cards2: cards2,
+                                cards: cards
+                            });
+                        }}
                         draggableItemDimension={{
                             height: 50
                         }}
                     >
                         {
-                            cards.filter(card =>  card.type === "1").map(card => {
+                            this.state.cards.filter(card => card.type === "1").map(card => {
                                 return (
                                     <DraggableItem id={card.id.toString()}>
-                                        <Card title={card.text}/>
+                                        <Card title={card.text} style={styles.Card}/>
                                     </DraggableItem>
                                 );
                             })
@@ -132,11 +173,11 @@ class App extends React.Component<Props, State> {
                     <DroppableContainer
                         style={styles.Container}
                         id={"2"}
-                        draggableItemDimension={{
-                            height: 50
-                        }}
                         onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {
-
+                            this.setState({
+                                cards2: cards2,
+                                cards: cards
+                            });
                             /*const otherCards = cards.filter(card => card.type === "1");
                             compCards = compCards.map((card: any) => {
                                 card.type = "2";
@@ -149,11 +190,31 @@ class App extends React.Component<Props, State> {
                             });*/
                         }}
                     >
+                        <DroppableContainer
+                            id={"3"}
+                            onChildDropped={(draggableInfo: IDraggableInfo, droppableInfo: IDroppableInfo) => {
+                                this.setState({
+                                    cards2: cards2,
+                                    cards: cards
+                                });
+                            }}
+                            style={styles.HorizontalContainer}
+                        >
+                            {
+                                this.state.cards2.map(card => {
+                                    return (
+                                        <DraggableItem id={card.id.toString()}>
+                                            <Card title={card.text} style={styles.Card2}/>
+                                        </DraggableItem>
+                                    );
+                                })
+                            }
+                        </DroppableContainer>
                         {
-                            cards.filter(card =>  card.type === "2").map(card => {
+                            this.state.cards.filter(card => card.type === "2").map(card => {
                                 return (
                                     <DraggableItem id={card.id.toString()}>
-                                        <Card title={card.text}/>
+                                        <Card title={card.text} style={styles.Card}/>
                                     </DraggableItem>
                                 );
                             })

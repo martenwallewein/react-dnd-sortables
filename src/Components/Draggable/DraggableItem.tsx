@@ -98,7 +98,7 @@ class DraggableItem extends React.Component<DraggableItemProps> {
 
         const returnElement = (
             <div
-                style={{...elementStyle, opacity}}
+                style={{...elementStyle, opacity, display: "inline-block"}}
                 className={elementClassName}
             >
                 {elementChildren}

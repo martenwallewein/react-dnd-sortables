@@ -22,6 +22,7 @@ export interface ISortableContext {
     draggables: any[];
     droppables: any[];
     currentDroppable: any;
+    removePlaceholders: Function;
 }
 
 const SortableContext = React.createContext({
@@ -37,7 +38,9 @@ const SortableContext = React.createContext({
     },
     setCurrentDroppable: (a: any) => {
 
-    }
+    },
+    removePlaceholders: () => {
+    },
 });
 
 @DragDropContext(HTML5Backend)
@@ -71,9 +74,15 @@ class SortableContextProvider extends React.Component<Props, State> {
         });
     }
 
+    removePlaceholders() {
+        for (let i = 0; i < this.state.droppables.length; ++i) {
+            this.state.droppables[i].removePlaceholders(true);
+        }
+    }
+
     registerDraggable(draggable: any) {
         const draggables = this.state.draggables;
-        if (draggables.find(drag => drag.id === draggable.props.id))
+        if (draggables.find(drag => drag.props.id === draggable.props.id))
             return;
 
         draggables.push(draggable);
@@ -86,7 +95,7 @@ class SortableContextProvider extends React.Component<Props, State> {
 
     registerDroppable(droppable: any) {
         const droppables = this.state.droppables;
-        if (droppables.find(drop => drop.id === droppable.props.id))
+        if (droppables.find(drop => drop.props.id === droppable.props.id))
             return;
 
         droppables.push(droppable);
@@ -105,7 +114,8 @@ class SortableContextProvider extends React.Component<Props, State> {
                     setState: this.setInternalState.bind(this),
                     registerDraggable: this.registerDraggable.bind(this),
                     registerDroppable: this.registerDroppable.bind(this),
-                    setCurrentDroppable: this.setCurrentDroppable.bind(this)
+                    setCurrentDroppable: this.setCurrentDroppable.bind(this),
+                    removePlaceholders: this.removePlaceholders.bind(this)
                 }}
             >
                 {this.props.children}

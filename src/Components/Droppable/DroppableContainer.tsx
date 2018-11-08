@@ -27,6 +27,8 @@ const dropTarget = {
             targetIndex
         };
 
+        props.context.removePlaceholders();
+
         component.stopDragging();
         props.onChildDropped(draggableInfo, droppableInfo);
         // component.removePlaceholders();
@@ -99,17 +101,18 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
             return {
                 id: child.props.id,
                 sourceIndex: index,
-                droppableId
+                droppableId,
+                isDraggableItem: child.__proto__.isDraggableItem
             };
         });
     }
 
-    public removePlaceholders() {
+    public removePlaceholders(setToFalse?: boolean) {
         let draggableChildren = this.state.draggableChildren;
 
         draggableChildren = draggableChildren.map(child => {
-            // if (child.placeholder)
-            //    child.placeholder = false;
+             if (setToFalse && child.placeholder)
+                child.placeholder = false;
 
             if (child.droppableId !== this.props.id)
                 return null;
@@ -127,7 +130,7 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
     public render() {
         const {connectDropTarget, children, style, className} = this.props;
         const {draggableChildren} = this.state;
-        console.log(this.state.draggableChildren);
+        // console.log(this.state.draggableChildren);
         // console.log("render");
         // console.log(cards);
         const childArray = React.Children.toArray(children);
@@ -174,7 +177,7 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
 
     private moveCard(id: string, atIndex: number) {
         // let {card} = this.findCardInternal(id);
-        console.log("move card " + id + " in list " + this.props.id + " at index " + atIndex);
+        // console.log("move card " + id + " in list " + this.props.id + " at index " + atIndex);
         // console.log(card);
 
         // const exisitingCard = this.state.draggableChildren[atIndex];
@@ -190,7 +193,7 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
                 placeholder: true,
                 droppableId: card.props.droppableId
             });
-            console.log("inserted card");
+            // console.log("inserted card");
             this.setState({
                 draggableChildren: cards,
                 isDraggingOver: true
@@ -202,7 +205,7 @@ class DroppableContainer extends React.Component<DroppableContainerProps, State>
         const index = this.state.draggableChildren.findIndex(card2 => id === card2.id);
         const card = this.state.draggableChildren[index];
         card.placeholder = true;
-        console.log(card);
+        // console.log(card);
         if (index === atIndex)
             return;
 
